@@ -1,0 +1,112 @@
+----------------------------------------------------------------------------------------------------------------------------------
+DROP TABLE MEMBER; -- 사원 테이블 삭제
+DROP TABLE WEBSIGN; -- 전자결재 테이블 삭제
+DROP TABLE BOARD; -- 게시판 테이블 삭제
+DROP SEQUENCE SEQ_BNO; -- 게시판 글 번호 삭제
+DROP TABLE COMMENT; -- 댓글 테이블 삭제
+DROP TABLE MEETING; -- 회의실예약 삭제
+----------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE MEMBER (
+    USERID VARCHAR2(20) PRIMARY KEY NOT NULL, -- (PK) 사원 번호, 사원 ID
+    USERPWD VARCHAR2(100) NOT NULL, -- 사원 비밀번호
+    USERNAME VARCHAR2(20) NOT NULL, -- 사원 명
+    USERNO VARCHAR2(20) NOT NULL, -- 사원 주민등록번호
+    EMAIL VARCHAR2(20), -- 이메일
+    PHONE VARCHAR2(20), -- 핸드폰번호
+    DEPT VARCHAR2(20), -- 부서
+    POSIT VARCHAR2(20), -- 직급
+    HIRE_DATE DATE, -- 입사일
+    USER_IMG VARCHAR2(1000), -- 프로필 사진
+    MINFO VACHAR2(500), -- 자기소개
+    ENT_YN VARCHAR2(1) -- 퇴사여부	
+
+);
+
+INSERT INTO MEMBER
+VALUES ('2020001','2020001','홍길동','901122-1234567','HONG90@GMAIL.COM','010-1234-1234','경영지원본부','사원','2020-01-01','','N');
+
+INSERT INTO MEMBER
+VALUES ('2018002','2018002','김길동','841010-1234567','KIMG80@GMAIL.COM','010-4321-4321','생산본부','대리','2018-04-09','','N');
+
+INSERT INTO MEMBER
+VALUES ('2005003','2005003','박길동','750101-1234567','PARK75@GMAIL.COM','010-5678-5678','영업추진본부','차장','2005-06-17','','N');
+
+INSERT INTO MEMBER
+VALUES ('2018004','2018004','이길동','850101-1234567','LEE85@GMAIL.COM','010-9876-9876','해외생산본부','대리','2018-04-09','','N');
+
+INSERT INTO MEMBER
+VALUES ('2020004','2020004','신길동','74850101-1234567','SIN74@GMAIL.COM','010-9999-9999','영업추진본부','차장','2004-09-09','','N');
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE WEBSIGN (
+    WNO NUMBER PRIMARY KEY, -- (PK), 문서번호
+    WTITLE VARCHAR2(100), -- 문서명
+    WCLS VARCHAR2(20), -- 문서구분
+    WCON VARCHAR2(1000), -- 문서 내용
+    WDATE DATE DEFAULT SYSDATE, -- 작성일
+    PROGRESS VARCHAR2(20), -- 진행도
+    SIGNER VARCHAR2(20), -- 결재자
+    SSTEP INT -- 결재자 결재 여부(1~5) 1:기안중, 2:임시저자 3:결재중 4:결재 5:반려
+);
+
+INSERT INTO WEBSIGN
+VALUES ('001','출장보고서','보고서','','','','','');
+
+INSERT INTO WEBSIGN
+VALUES ('002','사유서','사유서','','','','','');
+
+INSERT INTO WEBSIGN
+VALUES ('003','취소전표','전표','','','','','');
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE BOARD (
+    BNO NUMBER PRIMARY KEY, -- 글 번호
+    
+    BCLS VARCHAR2(20), -- 글 구분
+    BTITLE VARCHAR2(100), -- 글 제목
+    BDATE DATE DEFAULT SYSDATE, -- 글 작성일
+    BCOUNT NUMBER DEFAULT 0, -- 글 조회수
+    BCON VARCHAR2(4000), -- 글 내용
+    BTYPE NUMBER NOT NULL, -- 게시판 종류
+    STATUS VARCHAR2(1) DEFAULT 'Y' CHECK (STATUS IN ('Y', 'N')) -- 글 삭제여부
+);
+
+
+CREATE SEQUENCE SEQ_BNO
+START WITH 1
+INCREMENT BY 1
+NOCYCLE
+NOCACHE;
+
+CREATE OR REPLACE PROCEDURE TEST_BOARD_DATA AS
+BEGIN 
+ FOR CNT IN 1..250 LOOP
+    INSERT INTO BOARD VALUES (SEQ_BNO.NEXTVAL, '공지', 'TEST SAMPLE' || SEQ_BNO.CURRVAL, TO_DATE('20/01/01')+SEQ_BNO.CURRVAL, DEFAULT, 'TEST SAMPLE 데이터입니다.' || SEQ_BNO.CURRVAL, 1, DEFAULT);
+ END LOOP;
+ COMMIT;
+END;
+/
+
+EXEC TEST_BOARD_DATA;
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE COMMENT (
+    CNO INT PRIMARY KEY, -- (PK), 댓글 번호
+    CCON VARCHAR2(1000), --	댓글 내용
+    CDATE DATE DEFAULT SYSDATE -- 댓글 작성일
+);
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+CREATE TABLE MEETING (
+MSELECT	VARCHAR2(50), -- 회의실 선택
+MDATE DATE,	-- 예약 시간
+MSTIME VARCHAR2(50), -- 회의 시작 시간
+MFTIME VARCHAR2(50), -- 회의 종료 시간
+MNAME VARCHAR2(50)	-- 회의 명
+);
